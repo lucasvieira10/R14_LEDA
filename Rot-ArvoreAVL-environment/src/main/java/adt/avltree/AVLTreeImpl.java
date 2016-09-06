@@ -182,17 +182,30 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		int diference = heightLeftNode - heightRightNode;
 
 		if (diference > 0) {
-			if (node.getLeft().getLeft().isEmpty()) {
+			int heightChildrenLeft = height((BSTNode<T>) node.getLeft().getLeft());
+			int heightChildrenRight = height((BSTNode<T>) node.getLeft().getRight());
+
+			int diferenceChildren = heightChildrenLeft - heightChildrenRight;
+			
+			if (diferenceChildren < 0) {
 				Util.leftRotation((BSTNode<T>) node.getLeft());
+				return Util.rightRotation(node);
+			} else {
+				return Util.rightRotation(node);
 			}
 			
-			return Util.rightRotation(node);
 		} else {
-			if (node.getRight().getRight().isEmpty()) {
-				Util.rightRotation((BSTNode<T>) node.getRight());
-			}
+			int heightChildrenLeft = height((BSTNode<T>) node.getRight().getLeft());
+			int heightChildrenRight = height((BSTNode<T>) node.getRight().getRight());
+
+			int diferenceChildren = heightChildrenLeft - heightChildrenRight;
 			
-			return Util.leftRotation(node);
+			if (diferenceChildren > 0) {
+				Util.rightRotation((BSTNode<T>) node.getRight());
+				return Util.leftRotation(node);
+			} else {
+				return Util.leftRotation(node);
+			}
 		}
 	}
 }

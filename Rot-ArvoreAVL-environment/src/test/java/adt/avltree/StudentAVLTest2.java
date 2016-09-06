@@ -69,4 +69,32 @@ public class StudentAVLTest2 {
 		assertEquals(NIL, avl.getRoot());
 		assertTrue(avl.isEmpty());
 	}
+	
+	@Test
+	public void testRemoveAleatorio() {
+		for(int i = 1; i < 32; i++){
+			avl.insert(i);
+		}
+		assertEquals(Math.floor(Math.log(avl.size()) / Math.log(2)), avl.height(), 0.1);
+		assertTrue(avl.getRoot().getData().equals(16));
+
+
+		avl.remove(8);
+		avl.remove(13);
+		avl.remove(15);
+		assertEquals(Math.floor(Math.log(avl.size()) / Math.log(2)), avl.height(), 0.1);
+		assertTrue(avl.getRoot().getData().equals(16));
+
+		avl.remove(14);
+		assertEquals(Math.floor(Math.log(avl.size()) / Math.log(2)), avl.height(), 0.1);
+		assertTrue(avl.getRoot().getData().equals(16));
+
+		avl.remove(24);
+		avl.insert(24);
+		avl.remove(25);
+		avl.remove(27);
+		avl.remove(31);
+		assertEquals(Math.floor(Math.log(avl.size()) / Math.log(2)), avl.height(), 1.1);
+		assertTrue(avl.getRoot().getData().equals(16));
+	}
 }
