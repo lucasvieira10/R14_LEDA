@@ -14,18 +14,23 @@ import adt.bt.Util;
  */
 public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements AVLTree<T> {
 
+	private static final int MAXIMUM_BALANCE = 1;
+	private static final int IS_UNBALANCED_LEFT = 1;
+	private static final int CHILD_IS_LEFT_PENDING = 1;
+	private static final int CHILD_IS_RIGHT_PENDING = -1;
+	
 	protected int calculateBalance(BSTNode<T> node) {
-		if (node == null || node.isEmpty())
+		if ((node == null) || (node.isEmpty()))
 			return -1;
 
-		int heightLeftNode = height((BSTNode<T>) node.getLeft());
-		int heightRightNode = height((BSTNode<T>) node.getRight());
-
-		return Math.abs(heightLeftNode - heightRightNode);
+		int heightDifference = calculateHeightDifference((BSTNode<T>) node.getLeft(),
+				(BSTNode<T>) node.getRight());
+		
+		return Math.abs(heightDifference);
 	}
 
 	protected void rebalance(BSTNode<T> node) {
-		if (node == null || node.isEmpty())
+		if ((node == null) || (node.isEmpty()))
 			return;
 
 		BSTNode<T> rotatedNode = rotation(node);
@@ -39,7 +44,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		if (node == null)
 			return;
 		
-		if (calculateBalance(node) > 1) {
+		if (calculateBalance(node) > MAXIMUM_BALANCE) {
 			rebalance(node);
 		}
 		
@@ -175,32 +180,47 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		rebalanceUp(node);
 	}
 
+	/**
+	 * This auxiliary method calculate and return the height difference 
+	 * but does not use the module.  
+	 * 
+	 * @param leftNode
+	 * @param rightNode
+	 * @return height
+	 */
+	private int calculateHeightDifference(BSTNode<T> leftNode, BSTNode<T> rightNode) {
+		int heightLeftNode = height(leftNode);
+		int heightRightNode = height(rightNode);
+		
+		return (heightLeftNode - heightRightNode);
+	}
+	
+	/**
+	 * This auxiliary method apply the rotations in the nodes.
+	 * 
+	 * @param node
+	 * @return node
+	 */
 	private BSTNode<T> rotation(BSTNode<T> node) {
-		int heightLeftNode = height((BSTNode<T>) node.getLeft());
-		int heightRightNode = height((BSTNode<T>) node.getRight());
+		int heightDifference = calculateHeightDifference((BSTNode<T>) node.getLeft(),
+				(BSTNode<T>) node.getRight());
 
-		int diference = heightLeftNode - heightRightNode;
-
-		if (diference > 0) {
-			int heightChildrenLeft = height((BSTNode<T>) node.getLeft().getLeft());
-			int heightChildrenRight = height((BSTNode<T>) node.getLeft().getRight());
-
-			int diferenceChildren = heightChildrenLeft - heightChildrenRight;
+		if (heightDifference >= IS_UNBALANCED_LEFT) {
+			int differenceChildren = calculateHeightDifference((BSTNode<T>) node.getLeft().getLeft(),
+					(BSTNode<T>) node.getLeft().getRight());
 			
-			if (diferenceChildren < 0) {
+			if (differenceChildren <= CHILD_IS_RIGHT_PENDING) {
 				Util.leftRotation((BSTNode<T>) node.getLeft());
 				return Util.rightRotation(node);
 			} else {
 				return Util.rightRotation(node);
 			}
 			
-		} else {
-			int heightChildrenLeft = height((BSTNode<T>) node.getRight().getLeft());
-			int heightChildrenRight = height((BSTNode<T>) node.getRight().getRight());
-
-			int diferenceChildren = heightChildrenLeft - heightChildrenRight;
+		} else { /* IS_UNBALANCED_RIGHT */
+			int differenceChildren = calculateHeightDifference((BSTNode<T>) node.getRight().getLeft(),
+					(BSTNode<T>) node.getRight().getRight());
 			
-			if (diferenceChildren > 0) {
+			if (differenceChildren >= CHILD_IS_LEFT_PENDING) {
 				Util.rightRotation((BSTNode<T>) node.getRight());
 				return Util.leftRotation(node);
 			} else {
