@@ -209,7 +209,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 			int differenceChildren = calculateHeightDifference((BSTNode<T>) node.getLeft().getLeft(),
 					(BSTNode<T>) node.getLeft().getRight());
 			
-			if (differenceChildren <= CHILD_IS_RIGHT_PENDING) {
+			if (differenceChildren <= CHILD_IS_RIGHT_PENDING) { /* zigue-zague */
 				Util.leftRotation((BSTNode<T>) node.getLeft());
 				return Util.rightRotation(node);
 			} else {
@@ -220,7 +220,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 			int differenceChildren = calculateHeightDifference((BSTNode<T>) node.getRight().getLeft(),
 					(BSTNode<T>) node.getRight().getRight());
 			
-			if (differenceChildren >= CHILD_IS_LEFT_PENDING) {
+			if (differenceChildren >= CHILD_IS_LEFT_PENDING) { /* zigue-zague */
 				Util.rightRotation((BSTNode<T>) node.getRight());
 				return Util.leftRotation(node);
 			} else {
