@@ -33,6 +33,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		if ((node == null) || (node.isEmpty()))
 			return;
 
+		// chama o rotation pra ajustar a arvore
 		BSTNode<T> rotatedNode = rotation(node);
 		
 		if (rotatedNode.getParent() == null) {
@@ -48,6 +49,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 			rebalance(node);
 		}
 		
+		// vai chamando recursivamente para o pai do no para ir balanceando
 		rebalanceUp((BSTNode<T>) node.getParent());
 	}
 
@@ -94,6 +96,9 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 			node.setRight(rightNil);
 			rightNil.setParent(node);
 
+			// como o no inserido pode ter desbalanceado a arvore
+			// chamamos o rebalanceUp para ir rotacionando a arvore
+			// para menter balanceada
 			rebalanceUp(node);
 		} else {
 			if (element.compareTo(node.getData()) > 0) {
@@ -104,6 +109,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		}
 	}
 
+	// mesmo remove da BST so que sobrescrito para usar o rebalance
 	@Override
 	public void remove(T element) {
 		if (element == null)
@@ -172,11 +178,16 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 			}
 		}
 		
+		// chama o rebalance aqui pois a remocao de um no 
+		// pode desbalacear a arvore
 		rebalanceUp(aux);
 	}
 
 	private void removeLeaf(BSTNode<T> node) {
 		node.setData(null);
+		
+		// chama o rebalance aqui pois a remocao de um no 
+		// pode desbalacear a arvore
 		rebalanceUp(node);
 	}
 
@@ -192,6 +203,7 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		int heightLeftNode = height(leftNode);
 		int heightRightNode = height(rightNode);
 		
+		// se o retorno for positivo a altura a esquerda ta sendo maior e vice versa		
 		return (heightLeftNode - heightRightNode);
 	}
 	
@@ -205,10 +217,13 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 		int heightDifference = calculateHeightDifference((BSTNode<T>) node.getLeft(),
 				(BSTNode<T>) node.getRight());
 
+		// se o no estiver desbalanceado para a esquerda (mais nos a esquerda)
 		if (heightDifference >= IS_UNBALANCED_LEFT) {
 			int differenceChildren = calculateHeightDifference((BSTNode<T>) node.getLeft().getLeft(),
 					(BSTNode<T>) node.getLeft().getRight());
 			
+			// se o filho do no passado estiver pendendo para direita
+			// (se colocar mais um no a direita desse filho ele fica desbalanceado)
 			if (differenceChildren <= CHILD_IS_RIGHT_PENDING) { /* zigue-zague */
 				Util.leftRotation((BSTNode<T>) node.getLeft());
 				return Util.rightRotation(node);
@@ -216,10 +231,13 @@ public class AVLTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements 
 				return Util.rightRotation(node);
 			}
 			
+		// se o no estiver desbalanceado para a direita (mais nos a direita)
 		} else { /* IS_UNBALANCED_RIGHT */
 			int differenceChildren = calculateHeightDifference((BSTNode<T>) node.getRight().getLeft(),
 					(BSTNode<T>) node.getRight().getRight());
 			
+			// se o filho do no passado estiver pendendo para esquerda
+			// (se colocar mais um no a esquerda desse filho ele fica desbalanceado)
 			if (differenceChildren >= CHILD_IS_LEFT_PENDING) { /* zigue-zague */
 				Util.rightRotation((BSTNode<T>) node.getRight());
 				return Util.leftRotation(node);
